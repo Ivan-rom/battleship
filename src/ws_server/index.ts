@@ -16,13 +16,48 @@ wss.on("connection", (client) => {
 
       switch (message.type) {
         case MessageTypes.REG:
-          const newUser = db.addUser(message.data.name, message.data.password);
+          const existedUser = db.getUser(message.data.name);
 
-          const response = {
-            type: MessageTypes.REG,
-            data: JSON.stringify(newUser),
-            id: 0,
-          };
+          let response;
+
+          if (existedUser) {
+            if (existedUser.password === message.data.password) {
+              response = {
+                type: MessageTypes.REG,
+                data: JSON.stringify({
+                  ...existedUser,
+                  error: false,
+                  errorText: "",
+                }),
+                id: 0,
+              };
+            } else {
+              response = {
+                type: MessageTypes.REG,
+                data: JSON.stringify({
+                  ...existedUser,
+                  error: true,
+                  errorText: "Wrong password",
+                }),
+                id: 0,
+              };
+            }
+          } else {
+            const newUser = db.addUser(
+              message.data.name,
+              message.data.password
+            );
+
+            response = {
+              type: MessageTypes.REG,
+              data: JSON.stringify({
+                ...newUser,
+                error: false,
+                errorText: "",
+              }),
+              id: 0,
+            };
+          }
 
           client.send(JSON.stringify(response));
 
@@ -30,8 +65,6 @@ wss.on("connection", (client) => {
         default:
           break;
       }
-
-      console.log(message);
     } catch (error) {
       console.log(error);
     }
