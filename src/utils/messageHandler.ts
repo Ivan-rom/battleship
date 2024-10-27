@@ -137,6 +137,45 @@ export const messageHandler =
           });
           break;
 
+        case MessageTypes.ADD_SHIPS:
+          const game = db.addShips(
+            message.data.gameId,
+            message.data.indexPlayer,
+            message.data.ships
+          );
+
+          if (game?.players.every((player) => player.ships.length !== 0)) {
+            const gameClient1 = clients.find(
+              (el) => game.players[0].index === el.user.index
+            );
+            const gameClient2 = clients.find(
+              (el) => game.players[1].index === el.user.index
+            );
+
+            gameClient1!.client.send(
+              JSON.stringify({
+                id: 0,
+                type: MessageTypes.START_GAME,
+                data: JSON.stringify({
+                  currentPlayerIndex: game.players[0].index,
+                  ships: game.players[0].ships,
+                }),
+              })
+            );
+
+            gameClient2!.client.send(
+              JSON.stringify({
+                id: 0,
+                type: MessageTypes.START_GAME,
+                data: JSON.stringify({
+                  currentPlayerIndex: game.players[1].index,
+                  ships: game.players[1].ships,
+                }),
+              })
+            );
+          }
+          break;
+
         default:
           break;
       }

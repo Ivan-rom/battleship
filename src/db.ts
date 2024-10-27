@@ -1,3 +1,5 @@
+import { Ship } from "./utils/types";
+
 type User = {
   name: string;
   password: string;
@@ -19,8 +21,18 @@ type Room = {
 
 type Game = {
   idGame: number | string;
-  player1: number | string;
-  player2: number | string;
+  players: [
+    {
+      index: number | string;
+      ships: Ship[];
+      playerField: (0 | 1 | 2 | 3)[][];
+    },
+    {
+      index: number | string;
+      ships: Ship[];
+      playerField: (0 | 1 | 2 | 3)[][];
+    }
+  ];
 };
 
 export class DB {
@@ -86,12 +98,54 @@ export class DB {
   createGame(playerIndex1: number | string, playerIndex2: number | string) {
     const game: Game = {
       idGame: this.games.length + 1,
-      player1: playerIndex1,
-      player2: playerIndex2,
+      players: [
+        {
+          index: playerIndex1,
+          ships: [],
+          playerField: [],
+        },
+        {
+          index: playerIndex2,
+          ships: [],
+          playerField: [],
+        },
+      ],
     };
 
     this.games.push(game);
 
+    return game;
+  }
+
+  addShips(
+    idGame: number | string,
+    playerIndex: number | string,
+    ships: Ship[]
+  ) {
+    const game = this.games.find((el) => el.idGame === idGame);
+
+    const player = game?.players.find((el) => el.index === playerIndex)!;
+
+    player.ships = ships;
+
+    for (let i = 0; i < 10; i++) {
+      const line = new Array(10).fill(0);
+      player.playerField.push(line);
+    }
+
+    ships.forEach(({ position, length, direction }) => {
+      player.playerField[position.y][position.x] = 1;
+
+      if (length === 1) return;
+
+      for (let i = 1; i < length; i++) {
+        if (direction) {
+          player.playerField[position.y + i][position.x] = 1;
+        } else {
+          player.playerField[position.y][position.x + i] = 1;
+        }
+      }
+    });
     return game;
   }
 }

@@ -28,7 +28,7 @@ enum AttackStatus {
   SHOT = "shot",
 }
 
-type Ship = {
+export type Ship = {
   position: {
     x: number;
     y: number;
