@@ -61,6 +61,14 @@ wss.on("connection", (client) => {
 
           client.send(JSON.stringify(response));
 
+          client.send(
+            JSON.stringify({
+              type: MessageTypes.UPDATE_WINNERS,
+              id: 0,
+              data: JSON.stringify(db.winners),
+            })
+          );
+
           break;
         default:
           break;

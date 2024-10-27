@@ -4,11 +4,18 @@ type User = {
   index: number | string;
 };
 
+type Winner = {
+  name: string;
+  wins: number;
+};
+
 export class DB {
   users: User[];
+  winners: Winner[];
 
   constructor() {
     this.users = [];
+    this.winners = [];
   }
 
   addUser(name: string, password: string) {
