@@ -1,3 +1,5 @@
+import { WebSocket } from "ws";
+
 export enum MessageTypes {
   REG = "reg",
   UPDATE_WINNERS = "update_winners",
@@ -159,3 +161,8 @@ export type Message =
   | RandomAttackRequest
   | TurnResponse
   | FinishResponse;
+
+export type Client = {
+  client: WebSocket;
+  user: { name: string; index: number | string };
+};
