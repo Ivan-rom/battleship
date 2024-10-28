@@ -89,14 +89,16 @@ export function attackHandler(
   gameClients.forEach((currentClient) => {
     currentClient.client.send(getResponse(MessageTypes.ATTACK, dataFeedback));
 
-    if (dataFeedback.status === AttackStatus.MISS) {
-      currentClient.client.send(
-        getResponse(MessageTypes.TURN, {
-          currentPlayer: attackedPlayer?.index,
-        })
-      );
-      game.turn = attackedPlayer.index;
-    }
+    const currentPlayer =
+      dataFeedback.status === AttackStatus.MISS
+        ? attackedPlayer?.index
+        : indexPlayer;
+
+    currentClient.client.send(
+      getResponse(MessageTypes.TURN, { currentPlayer })
+    );
+
+    game.turn = currentPlayer;
 
     if (
       attackedPlayer.playerField.every(
