@@ -222,6 +222,8 @@ export const messageHandler =
           )
             return;
 
+          let isFinish = false;
+
           if (attackedPlayer?.playerField[y][x] === 1) {
             dataFeedback.status = "shot";
 
@@ -296,7 +298,35 @@ export const messageHandler =
                 })
               );
             }
+
+            if (attackedPlayer.playerField.every((row) => !row.includes(1))) {
+              isFinish = true;
+
+              currentClient.client.send(
+                JSON.stringify({
+                  id: 0,
+                  type: MessageTypes.FINISH,
+                  data: JSON.stringify({
+                    winPlayer: message.data.indexPlayer,
+                  }),
+                })
+              );
+            }
           });
+
+          if (isFinish) {
+            const updatedWinners = db.updateWinners(message.data.indexPlayer);
+
+            clients.forEach((currentClient) => {
+              currentClient.client.send(
+                JSON.stringify({
+                  id: 0,
+                  type: MessageTypes.UPDATE_WINNERS,
+                  data: JSON.stringify(updatedWinners),
+                })
+              );
+            });
+          }
           break;
 
         default:

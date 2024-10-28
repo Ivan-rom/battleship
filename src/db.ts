@@ -152,4 +152,19 @@ export class DB {
   getGameById(idGame: number | string) {
     return this.games.find((el) => el.idGame === idGame);
   }
+
+  updateWinners(playerIndex: number | string) {
+    const player = this.users.find((el) => el.index === playerIndex)!;
+    const winnerIndex = this.winners.findIndex((el) => el.name === player.name);
+
+    if (winnerIndex === -1) {
+      const newWinner = { name: player.name, wins: 1 };
+      this.winners.push(newWinner);
+      return this.winners;
+    }
+
+    this.winners[winnerIndex].wins += 1;
+    this.winners.sort((a, b) => a.wins - b.wins);
+    return this.winners;
+  }
 }
