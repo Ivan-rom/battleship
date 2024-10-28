@@ -1,13 +1,18 @@
 import { AttackStatus } from "./types";
 
+type Position = {
+  x: number;
+  y: number;
+};
+
 export function getKilledPositions(
   field: AttackStatus[][],
   x: number,
   y: number
 ) {
   const result: {
-    killed: { x: number; y: number }[];
-    empty: { x: number; y: number }[];
+    killed: Position[];
+    empty: Position[];
     isKilled: boolean;
   } = {
     killed: [],
@@ -76,83 +81,95 @@ export function getKilledPositions(
     }
   }
 
-  result.killed.forEach((killed) => {
-    let position;
-
-    if (killed.y !== 0) {
-      // top
-      position = { y: killed.y - 1, x: killed.x };
-
-      if (!result.killed.includes(position)) {
-        result.empty.push(position);
-      }
-
-      if (killed.x !== 0) {
-        // top left
-        position = { y: killed.y - 1, x: killed.x - 1 };
-
-        if (!result.killed.includes(position)) {
-          result.empty.push(position);
-        }
-      }
-
-      if (killed.x !== 9) {
-        // top right
-        position = { y: killed.y - 1, x: killed.x + 1 };
-
-        if (!result.killed.includes(position)) {
-          result.empty.push(position);
-        }
-      }
-    }
-
-    if (killed.y !== 9) {
-      // bottom
-      position = { y: killed.y + 1, x: killed.x };
-
-      if (!result.killed.includes(position)) {
-        result.empty.push(position);
-      }
-
-      if (killed.x !== 0) {
-        // bottom left
-        position = { y: killed.y + 1, x: killed.x - 1 };
-
-        if (!result.killed.includes(position)) {
-          result.empty.push(position);
-        }
-      }
-
-      if (killed.x !== 9) {
-        // bottom right
-        position = { y: killed.y + 1, x: killed.x + 1 };
-
-        if (!result.killed.includes(position)) {
-          result.empty.push(position);
-        }
-      }
-    }
-
-    if (killed.x !== 0) {
-      // left
-      position = { y: killed.y, x: killed.x - 1 };
-
-      if (!result.killed.includes(position)) {
-        result.empty.push(position);
-      }
-    }
-
-    if (killed.x !== 9) {
-      // right
-      position = { y: killed.y, x: killed.x + 1 };
-
-      if (!result.killed.includes(position)) {
-        result.empty.push(position);
-      }
-    }
-  });
+  result.empty = getEmptyPositions(field, result.killed);
 
   result.isKilled = true;
 
   return result;
+}
+
+function getEmptyPositions(field: AttackStatus[][], killed: Position[]) {
+  const result: Position[] = [];
+
+  killed.forEach((killedPosition) => {
+    let position;
+
+    if (killedPosition.y !== 0) {
+      // top
+      position = { y: killedPosition.y - 1, x: killedPosition.x };
+
+      if (!killed.includes(position) && isEmpty(field, position)) {
+        result.push(position);
+      }
+
+      if (killedPosition.x !== 0) {
+        // top left
+        position = { y: killedPosition.y - 1, x: killedPosition.x - 1 };
+
+        if (!killed.includes(position) && isEmpty(field, position)) {
+          result.push(position);
+        }
+      }
+
+      if (killedPosition.x !== 9) {
+        // top right
+        position = { y: killedPosition.y - 1, x: killedPosition.x + 1 };
+
+        if (!killed.includes(position) && isEmpty(field, position)) {
+          result.push(position);
+        }
+      }
+    }
+
+    if (killedPosition.y !== 9) {
+      // bottom
+      position = { y: killedPosition.y + 1, x: killedPosition.x };
+
+      if (!killed.includes(position) && isEmpty(field, position)) {
+        result.push(position);
+      }
+
+      if (killedPosition.x !== 0) {
+        // bottom left
+        position = { y: killedPosition.y + 1, x: killedPosition.x - 1 };
+
+        if (!killed.includes(position) && isEmpty(field, position)) {
+          result.push(position);
+        }
+      }
+
+      if (killedPosition.x !== 9) {
+        // bottom right
+        position = { y: killedPosition.y + 1, x: killedPosition.x + 1 };
+
+        if (!killed.includes(position) && isEmpty(field, position)) {
+          result.push(position);
+        }
+      }
+    }
+
+    if (killedPosition.x !== 0) {
+      // left
+      position = { y: killedPosition.y, x: killedPosition.x - 1 };
+
+      if (!killed.includes(position) && isEmpty(field, position)) {
+        result.push(position);
+      }
+    }
+
+    if (killedPosition.x !== 9) {
+      // right
+      position = { y: killedPosition.y, x: killedPosition.x + 1 };
+
+      if (!killed.includes(position) && isEmpty(field, position)) {
+        result.push(position);
+      }
+    }
+  });
+
+  return result;
+}
+
+function isEmpty(field: AttackStatus[][], { x, y }: Position) {
+  return field[y][x] === AttackStatus.EMPTY;
 }

@@ -89,7 +89,9 @@ export function attackHandler(
   }
 
   gameClients.forEach((currentClient) => {
-    currentClient.client.send(getResponse(MessageTypes.ATTACK, dataFeedback));
+    if (dataFeedback.status !== AttackStatus.KILLED) {
+      currentClient.client.send(getResponse(MessageTypes.ATTACK, dataFeedback));
+    }
 
     const currentPlayer =
       dataFeedback.status === AttackStatus.MISS
