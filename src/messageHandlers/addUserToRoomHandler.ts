@@ -17,6 +17,8 @@ export function addUserToRoomHandler(
   if (room?.roomUsers.length === 2) {
     const [player1, player2] = room.roomUsers;
 
+    db.removeRoom(data.indexRoom);
+
     const game = db.createGame(player1.index, player2.index);
 
     const client1 = clients.find((el) => el.user.index === player1.index);

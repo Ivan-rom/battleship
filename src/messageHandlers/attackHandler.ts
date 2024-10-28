@@ -112,6 +112,8 @@ export function attackHandler(
           winPlayer: indexPlayer,
         })
       );
+
+      db.removeGameById(gameId);
     }
   });
 

@@ -71,6 +71,14 @@ export class DB {
     return newRoom;
   }
 
+  removeRoom(roomId: string) {
+    const roomIndex = this.rooms.findIndex((el) => el.roomId === roomId);
+
+    if (roomIndex === -1) return "Room not found";
+
+    this.rooms.splice(roomIndex, 1);
+  }
+
   addUserToRoom(roomId: string, userIndex: string) {
     const room = this.rooms
       .filter((el) => el.roomUsers.length < 2)
@@ -82,6 +90,24 @@ export class DB {
       return "You are already in room";
 
     const user = this.users.find((el) => el.index === userIndex);
+
+    const prevRoomIndex = this.rooms.findIndex((el) =>
+      el.roomUsers.some(({ index }) => index === userIndex)
+    );
+
+    if (prevRoomIndex !== -1) {
+      const prevRoom = this.rooms[prevRoomIndex];
+
+      if (prevRoom.roomUsers[0].index === userIndex) {
+        prevRoom.roomUsers.shift();
+      } else {
+        prevRoom.roomUsers.pop();
+      }
+
+      if (prevRoom.roomUsers.length === 0) {
+        this.rooms.splice(prevRoomIndex, 1);
+      }
+    }
 
     room.roomUsers.push(user!);
   }
@@ -118,6 +144,14 @@ export class DB {
     this.games.push(game);
 
     return game;
+  }
+
+  removeGameById(idGame: string) {
+    const gameIndex = this.games.findIndex((el) => el.idGame === idGame);
+
+    if (gameIndex === -1) return "Game is not found";
+
+    this.games.splice(gameIndex, 1);
   }
 
   addShips(idGame: string, playerIndex: string, ships: Ship[]) {
