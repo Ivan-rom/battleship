@@ -13,14 +13,14 @@ export function attackHandler(
   clients: Client[],
   { data: { gameId, indexPlayer, x, y } }: AttackRequest
 ) {
-  const gameAttack = db.getGameById(gameId);
+  const game = db.getGameById(gameId);
 
-  const attackedPlayer = gameAttack?.players.find(
-    (el) => el.index !== indexPlayer
-  );
+  if (game?.turn !== indexPlayer) return;
+
+  const attackedPlayer = game?.players.find((el) => el.index !== indexPlayer);
 
   const gameClients = clients.filter((el) =>
-    gameAttack?.players.some((player) => player.index === el.user.index)
+    game?.players.some((player) => player.index === el.user.index)
   );
 
   let dataFeedback: {
@@ -95,6 +95,7 @@ export function attackHandler(
           currentPlayer: attackedPlayer?.index,
         })
       );
+      game.turn = attackedPlayer.index;
     }
 
     if (

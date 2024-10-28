@@ -21,6 +21,7 @@ type Room = {
 
 type Game = {
   idGame: number | string;
+  turn: number | string;
   players: [
     {
       index: number | string;
@@ -98,6 +99,7 @@ export class DB {
   createGame(playerIndex1: number | string, playerIndex2: number | string) {
     const game: Game = {
       idGame: this.games.length + 1,
+      turn: playerIndex1,
       players: [
         {
           index: playerIndex1,
