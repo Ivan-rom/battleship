@@ -38,13 +38,16 @@ type Game = {
 };
 
 export class DB {
+  bot: User;
   users: User[];
   winners: Winner[];
   rooms: Room[];
   games: Game[];
 
   constructor() {
-    this.users = [];
+    this.bot = { name: "bot", index: `${generateId()}_bot`, password: "" };
+
+    this.users = [this.bot];
     this.winners = [];
     this.rooms = [];
     this.games = [];
@@ -198,5 +201,9 @@ export class DB {
     this.winners[winnerIndex].wins += 1;
     this.winners.sort((a, b) => a.wins - b.wins);
     return this.winners;
+  }
+
+  createSingleGame(userIndex: string) {
+    return this.createGame(userIndex, this.bot.index);
   }
 }

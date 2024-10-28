@@ -6,7 +6,9 @@ import {
   AttackStatus,
   Client,
   MessageTypes,
+  RandomAttackRequest,
 } from "../utils/types";
+import { randomAttackHandler } from "./randomAttackHandler";
 
 export function attackHandler(
   db: DB,
@@ -116,6 +118,25 @@ export function attackHandler(
       db.removeGameById(gameId);
     }
   });
+
+  if (
+    (dataFeedback.status === AttackStatus.MISS &&
+      attackedPlayer.index === db.bot.index) ||
+    (dataFeedback.status !== AttackStatus.MISS && indexPlayer === db.bot.index)
+  ) {
+    setTimeout(() => {
+      const botAttack: RandomAttackRequest = {
+        id: 0,
+        type: MessageTypes.RANDOM_ATTACK,
+        data: {
+          gameId,
+          indexPlayer: db.bot.index,
+        },
+      };
+
+      randomAttackHandler(db, clients, botAttack);
+    }, 1000);
+  }
 
   if (isFinish) {
     const updatedWinners = db.updateWinners(indexPlayer);

@@ -8,6 +8,7 @@ import { addShipsHandler } from "../messageHandlers/addShipsHandler";
 import { createRoomHandler } from "../messageHandlers/createRoomHandler";
 import { addUserToRoomHandler } from "../messageHandlers/addUserToRoomHandler";
 import { randomAttackHandler } from "../messageHandlers/randomAttackHandler";
+import { singlePlayHandler } from "../messageHandlers/sinlePlayHandler";
 
 export const messageHandler =
   (client: Client, clients: Client[], db: DB) => async (msg: RawData) => {
@@ -39,10 +40,14 @@ export const messageHandler =
           randomAttackHandler(db, clients, request);
           break;
 
+        case MessageTypes.SINGLE_PLAY:
+          singlePlayHandler(db, client);
+          break;
+
         default:
           break;
       }
-      console.log(request);
+      // console.log(request);
     } catch (error) {
       console.log(error);
     }

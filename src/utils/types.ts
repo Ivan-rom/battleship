@@ -13,9 +13,10 @@ export enum MessageTypes {
   RANDOM_ATTACK = "randomAttack",
   TURN = "turn",
   FINISH = "finish",
+  SINGLE_PLAY = "single_play",
 }
 
-enum ShipTypes {
+export enum ShipTypes {
   SMALL = "small",
   MEDIUM = "medium",
   LARGE = "large",
@@ -56,6 +57,8 @@ export type RegRequest = MessageDraft<
 
 type CreateRoomRequest = MessageDraft<MessageTypes.CREATE_ROOM, "">;
 
+type SinglePlayRequest = MessageDraft<MessageTypes.SINGLE_PLAY, "">;
+
 export type AddUserToRoomRequest = MessageDraft<
   MessageTypes.ADD_USER_TO_ROOM,
   { indexRoom: string }
@@ -94,7 +97,8 @@ export type Request =
   | AddUserToRoomRequest
   | AddShipsRequest
   | AttackRequest
-  | RandomAttackRequest;
+  | RandomAttackRequest
+  | SinglePlayRequest;
 
 export type Client = {
   client: WebSocket;

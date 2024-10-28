@@ -15,15 +15,24 @@ export function addShipsHandler(
     const gameClient1 = clients.find(
       (el) => game.players[0].index === el.user.index
     );
-    const gameClient2 = clients.find(
-      (el) => game.players[1].index === el.user.index
-    );
 
     gameClient1!.client.send(
       getResponse(MessageTypes.START_GAME, {
         currentPlayerIndex: game.players[0].index,
         ships: game.players[0].ships,
       })
+    );
+
+    const turnMessage = getResponse(MessageTypes.TURN, {
+      currentPlayer: game.players[0].index,
+    });
+
+    gameClient1!.client.send(turnMessage);
+
+    if (game.players[1].index === db.bot.index) return;
+
+    const gameClient2 = clients.find(
+      (el) => game.players[1].index === el.user.index
     );
 
     gameClient2!.client.send(
@@ -33,11 +42,6 @@ export function addShipsHandler(
       })
     );
 
-    const turnMessage = getResponse(MessageTypes.TURN, {
-      currentPlayer: game.players[0].index,
-    });
-
-    gameClient1?.client.send(turnMessage);
     gameClient2?.client.send(turnMessage);
   }
 }

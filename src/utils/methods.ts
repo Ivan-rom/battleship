@@ -9,7 +9,10 @@ export async function parseRequest(message: RawData) {
 
   const parsedMessage = JSON.parse(messageString);
 
-  if (parsedMessage.type !== MessageTypes.CREATE_ROOM) {
+  if (
+    parsedMessage.type !== MessageTypes.CREATE_ROOM &&
+    parsedMessage.type !== MessageTypes.SINGLE_PLAY
+  ) {
     parsedMessage.data = JSON.parse(parsedMessage.data);
   }
 
