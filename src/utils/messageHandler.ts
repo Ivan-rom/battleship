@@ -1,6 +1,6 @@
 import { RawData } from "ws";
-import { AttackRequest, Client, MessageTypes } from "./types";
-import { getRandomAttack, parseRequest } from "./methods";
+import { Client, MessageTypes } from "./types";
+import { parseRequest } from "./methods";
 import { DB } from "../db";
 import { attackHandler } from "../messageHandlers/attackHandler";
 import { regHandler } from "../messageHandlers/regHandler";
@@ -8,7 +8,7 @@ import { addShipsHandler } from "../messageHandlers/addShipsHandler";
 import { createRoomHandler } from "../messageHandlers/createRoomHandler";
 import { addUserToRoomHandler } from "../messageHandlers/addUserToRoomHandler";
 import { randomAttackHandler } from "../messageHandlers/randomAttackHandler";
-import { singlePlayHandler } from "../messageHandlers/sinlePlayHandler";
+import { singlePlayHandler } from "../messageHandlers/singlePlayHandler";
 
 export const messageHandler =
   (client: Client, clients: Client[], db: DB) => async (msg: RawData) => {
@@ -47,7 +47,6 @@ export const messageHandler =
         default:
           break;
       }
-      // console.log(request);
     } catch (error) {
       console.log(error);
     }
