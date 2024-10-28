@@ -1,9 +1,10 @@
+import { generateId } from "./utils/methods";
 import { AttackStatus, Ship } from "./utils/types";
 
 type User = {
   name: string;
   password: string;
-  index: number | string;
+  index: string;
 };
 
 type Winner = {
@@ -12,24 +13,24 @@ type Winner = {
 };
 
 type Room = {
-  roomId: number | string;
+  roomId: string;
   roomUsers: {
     name: string;
-    index: number | string;
+    index: string;
   }[];
 };
 
 type Game = {
-  idGame: number | string;
-  turn: number | string;
+  idGame: string;
+  turn: string;
   players: [
     {
-      index: number | string;
+      index: string;
       ships: Ship[];
       playerField: AttackStatus[][];
     },
     {
-      index: number | string;
+      index: string;
       ships: Ship[];
       playerField: AttackStatus[][];
     }
@@ -50,7 +51,7 @@ export class DB {
   }
 
   addUser(name: string, password: string) {
-    const newUser: User = { name, password, index: this.users.length + 1 };
+    const newUser: User = { name, password, index: generateId() };
 
     this.users.push(newUser);
 
@@ -63,14 +64,14 @@ export class DB {
 
   createRoom() {
     const newRoom: Room = {
-      roomId: this.rooms.length + 1,
+      roomId: generateId(),
       roomUsers: [],
     };
     this.rooms.push(newRoom);
     return newRoom;
   }
 
-  addUserToRoom(roomId: number | string, userIndex: number | string) {
+  addUserToRoom(roomId: string, userIndex: string) {
     const room = this.rooms
       .filter((el) => el.roomUsers.length < 2)
       .find((el) => el.roomId === roomId);
@@ -92,13 +93,13 @@ export class DB {
     return filteredRooms;
   }
 
-  getRoomByIndex(roomId: number | string) {
+  getRoomByIndex(roomId: string) {
     return this.rooms.find((room) => room.roomId === roomId);
   }
 
-  createGame(playerIndex1: number | string, playerIndex2: number | string) {
+  createGame(playerIndex1: string, playerIndex2: string) {
     const game: Game = {
-      idGame: this.games.length + 1,
+      idGame: generateId(),
       turn: playerIndex1,
       players: [
         {
@@ -119,11 +120,7 @@ export class DB {
     return game;
   }
 
-  addShips(
-    idGame: number | string,
-    playerIndex: number | string,
-    ships: Ship[]
-  ) {
+  addShips(idGame: string, playerIndex: string, ships: Ship[]) {
     const game = this.games.find((el) => el.idGame === idGame);
 
     const player = game?.players.find((el) => el.index === playerIndex)!;
@@ -150,11 +147,11 @@ export class DB {
     });
   }
 
-  getGameById(idGame: number | string) {
+  getGameById(idGame: string) {
     return this.games.find((el) => el.idGame === idGame);
   }
 
-  updateWinners(playerIndex: number | string) {
+  updateWinners(playerIndex: string) {
     const player = this.users.find((el) => el.index === playerIndex)!;
     const winnerIndex = this.winners.findIndex((el) => el.name === player.name);
 

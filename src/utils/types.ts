@@ -58,33 +58,33 @@ type CreateRoomRequest = MessageDraft<MessageTypes.CREATE_ROOM, "">;
 
 export type AddUserToRoomRequest = MessageDraft<
   MessageTypes.ADD_USER_TO_ROOM,
-  { indexRoom: number | string }
+  { indexRoom: string }
 >;
 
 export type AddShipsRequest = MessageDraft<
   MessageTypes.ADD_SHIPS,
   {
-    gameId: string | number;
+    gameId: string;
     ships: Ship[];
-    indexPlayer: number | string;
+    indexPlayer: string;
   }
 >;
 
 export type AttackRequest = MessageDraft<
   MessageTypes.ATTACK,
   {
-    gameId: number | string;
+    gameId: string;
     x: number;
     y: number;
-    indexPlayer: number | string;
+    indexPlayer: string;
   }
 >;
 
 export type RandomAttackRequest = MessageDraft<
   MessageTypes.RANDOM_ATTACK,
   {
-    gameId: number | string;
-    indexPlayer: number | string;
+    gameId: string;
+    indexPlayer: string;
   }
 >;
 
@@ -98,5 +98,5 @@ export type Request =
 
 export type Client = {
   client: WebSocket;
-  user: { name: string; index: number | string };
+  user: { name: string; index: string };
 };

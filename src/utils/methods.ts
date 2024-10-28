@@ -1,5 +1,8 @@
 import { RawData } from "ws";
 import { Request, MessageTypes, MessageDraft, AttackStatus } from "./types";
+import { randomUUID } from "node:crypto";
+
+const existedIds: `${string}-${string}-${string}-${string}-${string}`[] = [];
 
 export async function parseRequest(message: RawData) {
   const messageString = message.toString();
@@ -13,6 +16,16 @@ export async function parseRequest(message: RawData) {
   const messageData = parsedMessage as Request;
 
   return messageData;
+}
+
+export function generateId() {
+  const id = randomUUID();
+
+  if (existedIds.includes(id)) {
+    return generateId();
+  }
+
+  return id;
 }
 
 export function getResponse(type: MessageTypes, data: any) {

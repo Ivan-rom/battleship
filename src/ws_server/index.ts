@@ -13,7 +13,7 @@ wss.on("connection", clientHandler);
 function clientHandler(client: WebSocket) {
   console.log("Client connection");
 
-  const clientData = { client, user: { name: "", index: 0 } };
+  const clientData = { client, user: { name: "", index: "" } };
 
   clients.push(clientData);
 
