@@ -124,18 +124,20 @@ export function attackHandler(
       attackedPlayer.index === db.bot.index) ||
     (dataFeedback.status !== AttackStatus.MISS && indexPlayer === db.bot.index)
   ) {
-    setTimeout(() => {
-      const botAttack: RandomAttackRequest = {
-        id: 0,
-        type: MessageTypes.RANDOM_ATTACK,
-        data: {
-          gameId,
-          indexPlayer: db.bot.index,
-        },
-      };
+    if (!isFinish) {
+      setTimeout(() => {
+        const botAttack: RandomAttackRequest = {
+          id: 0,
+          type: MessageTypes.RANDOM_ATTACK,
+          data: {
+            gameId,
+            indexPlayer: db.bot.index,
+          },
+        };
 
-      randomAttackHandler(db, clients, botAttack);
-    }, 1000);
+        randomAttackHandler(db, clients, botAttack);
+      }, 1000);
+    }
   }
 
   if (isFinish) {
