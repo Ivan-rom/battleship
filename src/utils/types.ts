@@ -38,13 +38,13 @@ export type Ship = {
   type: ShipTypes;
 };
 
-type MessageDraft<MessageType extends MessageTypes, DataType> = {
+export type MessageDraft<MessageType extends MessageTypes, DataType> = {
   id: 0;
   type: MessageType;
   data: DataType;
 };
 
-type RegRequest = MessageDraft<
+export type RegRequest = MessageDraft<
   MessageTypes.REG,
   {
     name: string;
@@ -52,41 +52,14 @@ type RegRequest = MessageDraft<
   }
 >;
 
-type UpdateWinnersResponse = MessageDraft<
-  MessageTypes.UPDATE_WINNERS,
-  {
-    name: string;
-    wins: number;
-  }[]
->;
-
 type CreateRoomRequest = MessageDraft<MessageTypes.CREATE_ROOM, "">;
 
-type AddUserToRoomRequest = MessageDraft<
+export type AddUserToRoomRequest = MessageDraft<
   MessageTypes.ADD_USER_TO_ROOM,
   { indexRoom: number | string }
 >;
 
-type CreateGameResponse = MessageDraft<
-  MessageTypes.CREATE_GAME,
-  {
-    idGame: number | string;
-    idPlayer: number | string;
-  }
->;
-
-type UpdateRoomResponse = MessageDraft<
-  MessageTypes.UPDATE_ROOM,
-  {
-    roomId: number | string;
-    roomUsers: {
-      name: string;
-      index: number | string;
-    }[];
-  }[]
->;
-
-type AddShipsRequest = MessageDraft<
+export type AddShipsRequest = MessageDraft<
   MessageTypes.ADD_SHIPS,
   {
     gameId: string | number;
@@ -95,15 +68,7 @@ type AddShipsRequest = MessageDraft<
   }
 >;
 
-type StartGameResponse = MessageDraft<
-  MessageTypes.START_GAME,
-  {
-    ships: Ship[];
-    currentPlayerIndex: number | string;
-  }
->;
-
-type AttackRequest = MessageDraft<
+export type AttackRequest = MessageDraft<
   MessageTypes.ATTACK,
   {
     gameId: number | string;
@@ -121,33 +86,13 @@ type RandomAttackRequest = MessageDraft<
   }
 >;
 
-type TurnResponse = MessageDraft<
-  MessageTypes.TURN,
-  {
-    currentPlayer: number | string;
-  }
->;
-
-type FinishResponse = MessageDraft<
-  MessageTypes.FINISH,
-  {
-    winPlayer: number | string;
-  }
->;
-
-export type Message =
+export type Request =
   | RegRequest
-  | UpdateWinnersResponse
   | CreateRoomRequest
   | AddUserToRoomRequest
-  | CreateGameResponse
-  | UpdateRoomResponse
   | AddShipsRequest
-  | StartGameResponse
   | AttackRequest
-  | RandomAttackRequest
-  | TurnResponse
-  | FinishResponse;
+  | RandomAttackRequest;
 
 export type Client = {
   client: WebSocket;

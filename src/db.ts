@@ -146,7 +146,6 @@ export class DB {
         }
       }
     });
-    return game;
   }
 
   getGameById(idGame: number | string) {
