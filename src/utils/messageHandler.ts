@@ -1,12 +1,13 @@
 import { RawData } from "ws";
-import { Client, MessageTypes } from "./types";
-import { parseRequest } from "./methods";
+import { AttackRequest, Client, MessageTypes } from "./types";
+import { getRandomAttack, parseRequest } from "./methods";
 import { DB } from "../db";
 import { attackHandler } from "../messageHandlers/attackHandler";
 import { regHandler } from "../messageHandlers/regHandler";
 import { addShipsHandler } from "../messageHandlers/addShipsHandler";
 import { createRoomHandler } from "../messageHandlers/createRoomHandler";
 import { addUserToRoomHandler } from "../messageHandlers/addUserToRoomHandler";
+import { randomAttackHandler } from "../messageHandlers/randomAttackHandler";
 
 export const messageHandler =
   (client: Client, clients: Client[], db: DB) => async (msg: RawData) => {
@@ -32,6 +33,10 @@ export const messageHandler =
 
         case MessageTypes.ATTACK:
           attackHandler(db, clients, request);
+          break;
+
+        case MessageTypes.RANDOM_ATTACK:
+          randomAttackHandler(db, clients, request);
           break;
 
         default:

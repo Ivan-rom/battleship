@@ -1,5 +1,5 @@
 import { RawData } from "ws";
-import { Request, MessageTypes, MessageDraft } from "./types";
+import { Request, MessageTypes, MessageDraft, AttackStatus } from "./types";
 
 export async function parseRequest(message: RawData) {
   const messageString = message.toString();
@@ -23,4 +23,26 @@ export function getResponse(type: MessageTypes, data: any) {
   };
 
   return JSON.stringify(response);
+}
+
+export function getRandomNumber(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+export function getRandomAttack(field: AttackStatus[][]) {
+  const randomX = getRandomNumber(0, 9);
+  const randomY = getRandomNumber(0, 9);
+
+  if (
+    field[randomY][randomX] === AttackStatus.KILLED ||
+    field[randomY][randomX] === AttackStatus.MISS ||
+    field[randomY][randomX] === AttackStatus.SHOT
+  ) {
+    return getRandomAttack(field);
+  }
+
+  return {
+    x: randomX,
+    y: randomY,
+  };
 }

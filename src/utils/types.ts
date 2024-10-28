@@ -80,7 +80,7 @@ export type AttackRequest = MessageDraft<
   }
 >;
 
-type RandomAttackRequest = MessageDraft<
+export type RandomAttackRequest = MessageDraft<
   MessageTypes.RANDOM_ATTACK,
   {
     gameId: number | string;
