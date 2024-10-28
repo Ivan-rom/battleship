@@ -1,6 +1,6 @@
 import { RawData } from "ws";
 import { Client, MessageTypes } from "./types";
-import { parseMessage } from "./methods";
+import { getKilledPositions, parseMessage } from "./methods";
 import { DB } from "../db";
 
 export const messageHandler =
@@ -173,7 +173,130 @@ export const messageHandler =
                 }),
               })
             );
+
+            const turnMessage = {
+              id: 0,
+              type: MessageTypes.TURN,
+              data: JSON.stringify({
+                currentPlayer: game.players[0].index,
+              }),
+            };
+
+            gameClient1?.client.send(JSON.stringify(turnMessage));
+            gameClient2?.client.send(JSON.stringify(turnMessage));
           }
+          break;
+
+        case MessageTypes.ATTACK:
+          const gameAttack = db.getGameById(message.data.gameId);
+
+          const attackedPlayer = gameAttack?.players.find(
+            (el) => el.index !== message.data.indexPlayer
+          );
+
+          const gameClients = clients.filter((el) =>
+            gameAttack?.players.some((player) => player.index === el.user.index)
+          );
+
+          let dataFeedback: {
+            position: {
+              x: number;
+              y: number;
+            };
+            currentPlayer: number | string;
+            status: "miss" | "killed" | "shot";
+          } = {
+            position: {
+              x: message.data.x,
+              y: message.data.y,
+            },
+            currentPlayer: message.data.indexPlayer,
+            status: "miss",
+          };
+
+          const { x, y } = message.data;
+
+          if (
+            attackedPlayer?.playerField[y][x] !== 0 &&
+            attackedPlayer?.playerField[y][x] !== 1
+          )
+            return;
+
+          if (attackedPlayer?.playerField[y][x] === 1) {
+            dataFeedback.status = "shot";
+
+            attackedPlayer.playerField[y][x] = 2;
+
+            const shootPositions = getKilledPositions(
+              attackedPlayer.playerField,
+              x,
+              y
+            );
+
+            if (shootPositions.isKilled) {
+              dataFeedback.status = "killed";
+
+              shootPositions.empty.forEach(({ x, y }) => {
+                attackedPlayer.playerField[y][x] = 3;
+
+                gameClients.forEach((currentClient) => {
+                  currentClient.client.send(
+                    JSON.stringify({
+                      id: 0,
+                      type: MessageTypes.ATTACK,
+                      data: JSON.stringify({
+                        position: { x, y },
+                        currentPlayer: message.data.indexPlayer,
+                        status: "miss",
+                      }),
+                    })
+                  );
+                });
+              });
+
+              shootPositions.killed.forEach(({ x, y }) => {
+                attackedPlayer.playerField[y][x] = 2;
+
+                gameClients.forEach((currentClient) => {
+                  currentClient.client.send(
+                    JSON.stringify({
+                      id: 0,
+                      type: MessageTypes.ATTACK,
+                      data: JSON.stringify({
+                        position: { x, y },
+                        currentPlayer: message.data.indexPlayer,
+                        status: "killed",
+                      }),
+                    })
+                  );
+                });
+              });
+            }
+          } else {
+            attackedPlayer.playerField[y][x] = 3;
+          }
+
+          gameClients.forEach((currentClient) => {
+            currentClient.client.send(
+              JSON.stringify({
+                id: 0,
+                type: MessageTypes.ATTACK,
+                data: JSON.stringify(dataFeedback),
+              })
+            );
+
+            if (dataFeedback.status === "miss") {
+              currentClient.client.send(
+                JSON.stringify({
+                  id: 0,
+                  type: MessageTypes.TURN,
+                  data: JSON.stringify({
+                    currentPlayer: attackedPlayer?.index,
+                  }),
+                })
+              );
+            }
+          });
           break;
 
         default:

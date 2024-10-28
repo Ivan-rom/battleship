@@ -113,18 +113,6 @@ type AttackRequest = MessageDraft<
   }
 >;
 
-type AttackResponse = MessageDraft<
-  MessageTypes.ATTACK,
-  {
-    position: {
-      x: number;
-      y: number;
-    };
-    currentPlayer: number | string;
-    status: AttackStatus;
-  }
->;
-
 type RandomAttackRequest = MessageDraft<
   MessageTypes.RANDOM_ATTACK,
   {
@@ -157,7 +145,6 @@ export type Message =
   | AddShipsRequest
   | StartGameResponse
   | AttackRequest
-  | AttackResponse
   | RandomAttackRequest
   | TurnResponse
   | FinishResponse;

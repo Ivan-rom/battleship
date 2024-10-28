@@ -148,4 +148,8 @@ export class DB {
     });
     return game;
   }
+
+  getGameById(idGame: number | string) {
+    return this.games.find((el) => el.idGame === idGame);
+  }
 }
