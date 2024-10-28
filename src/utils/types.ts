@@ -22,10 +22,12 @@ enum ShipTypes {
   HUGE = "huge",
 }
 
-enum AttackStatus {
+export enum AttackStatus {
   MISS = "miss",
   KILLED = "killed",
   SHOT = "shot",
+  SHIP = "ship",
+  EMPTY = "empty",
 }
 
 export type Ship = {

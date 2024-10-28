@@ -1,7 +1,12 @@
 import { DB } from "../db";
 import { getKilledPositions } from "../utils/getKilledPostions";
 import { getResponse } from "../utils/methods";
-import { AttackRequest, Client, MessageTypes } from "../utils/types";
+import {
+  AttackRequest,
+  AttackStatus,
+  Client,
+  MessageTypes,
+} from "../utils/types";
 
 export function attackHandler(
   db: DB,
@@ -24,67 +29,67 @@ export function attackHandler(
       y: number;
     };
     currentPlayer: number | string;
-    status: "miss" | "killed" | "shot";
+    status: AttackStatus;
   } = {
     position: { x, y },
     currentPlayer: indexPlayer,
-    status: "miss",
+    status: AttackStatus.MISS,
   };
 
   if (
-    attackedPlayer?.playerField[y][x] !== 0 &&
-    attackedPlayer?.playerField[y][x] !== 1
+    attackedPlayer?.playerField[y][x] !== AttackStatus.EMPTY &&
+    attackedPlayer?.playerField[y][x] !== AttackStatus.SHIP
   )
     return;
 
   let isFinish = false;
 
-  if (attackedPlayer?.playerField[y][x] === 1) {
-    dataFeedback.status = "shot";
+  if (attackedPlayer?.playerField[y][x] === AttackStatus.SHIP) {
+    dataFeedback.status = AttackStatus.SHOT;
 
-    attackedPlayer.playerField[y][x] = 2;
+    attackedPlayer.playerField[y][x] = AttackStatus.SHOT;
 
     const shootPositions = getKilledPositions(attackedPlayer.playerField, x, y);
 
     if (shootPositions.isKilled) {
-      dataFeedback.status = "killed";
+      dataFeedback.status = AttackStatus.KILLED;
 
       shootPositions.empty.forEach(({ x, y }) => {
-        attackedPlayer.playerField[y][x] = 3;
+        attackedPlayer.playerField[y][x] = AttackStatus.MISS;
 
         gameClients.forEach((currentClient) => {
           currentClient.client.send(
             getResponse(MessageTypes.ATTACK, {
               position: { x, y },
               currentPlayer: indexPlayer,
-              status: "miss",
+              status: AttackStatus.MISS,
             })
           );
         });
       });
 
       shootPositions.killed.forEach(({ x, y }) => {
-        attackedPlayer.playerField[y][x] = 2;
+        attackedPlayer.playerField[y][x] = AttackStatus.KILLED;
 
         gameClients.forEach((currentClient) => {
           currentClient.client.send(
             getResponse(MessageTypes.ATTACK, {
               position: { x, y },
               currentPlayer: indexPlayer,
-              status: "killed",
+              status: AttackStatus.KILLED,
             })
           );
         });
       });
     }
   } else {
-    attackedPlayer.playerField[y][x] = 3;
+    attackedPlayer.playerField[y][x] = AttackStatus.MISS;
   }
 
   gameClients.forEach((currentClient) => {
     currentClient.client.send(getResponse(MessageTypes.ATTACK, dataFeedback));
 
-    if (dataFeedback.status === "miss") {
+    if (dataFeedback.status === AttackStatus.MISS) {
       currentClient.client.send(
         getResponse(MessageTypes.TURN, {
           currentPlayer: attackedPlayer?.index,
@@ -92,7 +97,11 @@ export function attackHandler(
       );
     }
 
-    if (attackedPlayer.playerField.every((row) => !row.includes(1))) {
+    if (
+      attackedPlayer.playerField.every(
+        (row) => !row.includes(AttackStatus.SHIP)
+      )
+    ) {
       isFinish = true;
 
       currentClient.client.send(

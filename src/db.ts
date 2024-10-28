@@ -1,4 +1,4 @@
-import { Ship } from "./utils/types";
+import { AttackStatus, Ship } from "./utils/types";
 
 type User = {
   name: string;
@@ -25,12 +25,12 @@ type Game = {
     {
       index: number | string;
       ships: Ship[];
-      playerField: (0 | 1 | 2 | 3)[][];
+      playerField: AttackStatus[][];
     },
     {
       index: number | string;
       ships: Ship[];
-      playerField: (0 | 1 | 2 | 3)[][];
+      playerField: AttackStatus[][];
     }
   ];
 };
@@ -129,20 +129,20 @@ export class DB {
     player.ships = ships;
 
     for (let i = 0; i < 10; i++) {
-      const line = new Array(10).fill(0);
+      const line = new Array(10).fill(AttackStatus.EMPTY);
       player.playerField.push(line);
     }
 
     ships.forEach(({ position, length, direction }) => {
-      player.playerField[position.y][position.x] = 1;
+      player.playerField[position.y][position.x] = AttackStatus.SHIP;
 
       if (length === 1) return;
 
       for (let i = 1; i < length; i++) {
         if (direction) {
-          player.playerField[position.y + i][position.x] = 1;
+          player.playerField[position.y + i][position.x] = AttackStatus.SHIP;
         } else {
-          player.playerField[position.y][position.x + i] = 1;
+          player.playerField[position.y][position.x + i] = AttackStatus.SHIP;
         }
       }
     });
